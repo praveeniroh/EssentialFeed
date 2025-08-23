@@ -21,6 +21,22 @@ final class RemoteFeedsLoaderTest: XCTestCase {
         XCTAssertNotNil(client.url)
     }
 
+    func test_loadTwice_requestsDataFromURLTwice_Success(){
+        let url = URL( string:"https://example.com/feed")!
+        let (loader, client) = getFeedLoaderAndClient(url: url)
+        loader.load()
+        loader.load()
+        ///Failed when loader internally called cleint.load multiple times
+        XCTAssertEqual([url,url], client.requestedURLs)
+    }
+
+    func test_loadTwice_requestsDataFromURLTwice_Failure(){
+        let url = URL( string:"https://example.com/feed")!
+        let (loader, client) = getFeedLoaderAndClient(url: url)
+        loader.load()
+        loader.load()
+        XCTAssertNotEqual([url], client.requestedURLs)
+    }
     //MARK: Utils
     private func getFeedLoaderAndClient(url: URL = URL(string: "https://example.com/feed")!) -> (loader: RemoteFeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
@@ -31,8 +47,10 @@ final class RemoteFeedsLoaderTest: XCTestCase {
 
     private class HTTPClientSpy: HTTPClient {
         var url: URL?
+        var requestedURLs: [URL] = []
         func load(from url: URL) {
             self.url = url
+            requestedURLs.append(url)
             print(">>> Loading data from \(url)")
         }
     }
