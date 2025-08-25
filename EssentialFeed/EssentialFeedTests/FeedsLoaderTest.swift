@@ -11,14 +11,14 @@ import EssentialFeed
 final class RemoteFeedsLoaderTest: XCTestCase {
     func test_init_doNotRequestsDataFromURL() {
         let (_,client) = getFeedLoaderAndClient()
-        XCTAssertNil(client.url)
+        XCTAssertTrue(client.requestedURLs.isEmpty)
     }
 
     func test_load_requestsDataFromURL() {
         let url = URL( string:"https://example.com/feed")!
         let (loader, client) = getFeedLoaderAndClient(url: url)
         loader.load()
-        XCTAssertNotNil(client.url)
+        XCTAssertEqual(client.requestedURLs.count,1)
     }
 
     func test_loadTwice_requestsDataFromURLTwice_Success(){
@@ -46,10 +46,8 @@ final class RemoteFeedsLoaderTest: XCTestCase {
     }
 
     private class HTTPClientSpy: HTTPClient {
-        var url: URL?
         var requestedURLs: [URL] = []
         func load(from url: URL) {
-            self.url = url
             requestedURLs.append(url)
             print(">>> Loading data from \(url)")
         }
