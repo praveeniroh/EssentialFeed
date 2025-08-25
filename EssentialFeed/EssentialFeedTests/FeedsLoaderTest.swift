@@ -10,20 +10,20 @@ import EssentialFeed
 
 final class RemoteFeedsLoaderTest: XCTestCase {
     func test_init_doNotRequestsDataFromURL() {
-        let (_,client) = getFeedLoaderAndClient()
+        let (_,client) = makeSUT()
         XCTAssertTrue(client.requestedURLs.isEmpty)
     }
 
     func test_load_requestsDataFromURL() {
         let url = URL( string:"https://example.com/feed")!
-        let (loader, client) = getFeedLoaderAndClient(url: url)
+        let (loader, client) = makeSUT(url: url)
         loader.load()
         XCTAssertEqual(client.requestedURLs.count,1)
     }
 
     func test_loadTwice_requestsDataFromURLTwice_Success(){
         let url = URL( string:"https://example.com/feed")!
-        let (loader, client) = getFeedLoaderAndClient(url: url)
+        let (loader, client) = makeSUT(url: url)
         loader.load()
         loader.load()
         ///Failed when loader internally called cleint.load multiple times
@@ -32,14 +32,14 @@ final class RemoteFeedsLoaderTest: XCTestCase {
 
     func test_loadTwice_requestsDataFromURLTwice_Failure(){
         let url = URL( string:"https://example.com/feed")!
-        let (loader, client) = getFeedLoaderAndClient(url: url)
+        let (loader, client) = makeSUT(url: url)
         loader.load()
         loader.load()
         XCTAssertNotEqual([url], client.requestedURLs)
     }
 
     func test_load_deliverErrorOnClientError(){
-        let (loader, client) = getFeedLoaderAndClient()
+        let (loader, client) = makeSUT()
         client.error = NSError(domain: "No Network", code: 299, userInfo: nil)
 
         loader.load { error in
@@ -48,7 +48,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
     }
 
     //MARK: Utils
-    private func getFeedLoaderAndClient(url: URL = URL(string: "https://example.com/feed")!) -> (loader: RemoteFeedLoader, client: HTTPClientSpy) {
+    private func makeSUT(url: URL = URL(string: "https://example.com/feed")!) -> (loader: RemoteFeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
         let loader = RemoteFeedLoader(httpClient: client, url: url)
         return (loader, client)
