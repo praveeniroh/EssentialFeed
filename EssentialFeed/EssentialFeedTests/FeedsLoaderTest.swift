@@ -41,10 +41,9 @@ final class RemoteFeedsLoaderTest: XCTestCase {
     func test_load_deliverErrorOnClientError(){
         let (loader, client) = makeSUT()
         client.error = NSError(domain: "No Network", code: 299, userInfo: nil)
-
-        loader.load { error in
-            XCTAssertEqual(error, .connectivity)
-        }
+        var capturedErrors = [RemoteFeedLoader.Error]()
+        loader.load { capturedErrors.append($0)}
+        XCTAssertEqual(capturedErrors, [.connectivity])
     }
 
     //MARK: Utils
