@@ -17,15 +17,15 @@ final class RemoteFeedsLoaderTest: XCTestCase {
     func test_load_requestsDataFromURL() {
         let url = URL( string:"https://example.com/feed")!
         let (loader, client) = makeSUT(url: url)
-        loader.load()
+        loader.load() {_ in}
         XCTAssertEqual(client.requestedURLs.count,1)
     }
 
     func test_loadTwice_requestsDataFromURLTwice_Success(){
         let url = URL( string:"https://example.com/feed")!
         let (loader, client) = makeSUT(url: url)
-        loader.load()
-        loader.load()
+        loader.load() {_ in}
+        loader.load() {_ in}
         ///Failed when loader internally called cleint.load multiple times
         XCTAssertEqual([url,url], client.requestedURLs)
     }
@@ -33,8 +33,8 @@ final class RemoteFeedsLoaderTest: XCTestCase {
     func test_loadTwice_requestsDataFromURLTwice_Failure(){
         let url = URL( string:"https://example.com/feed")!
         let (loader, client) = makeSUT(url: url)
-        loader.load()
-        loader.load()
+        loader.load() {_ in}
+        loader.load() {_ in}
         XCTAssertNotEqual([url], client.requestedURLs)
     }
 
