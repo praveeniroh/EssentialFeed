@@ -44,8 +44,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
         loader.load { capturedErrors.append($0)}
 
         let clientError = NSError(domain: "No Network", code: 299, userInfo: nil)
-        client.completions[0](clientError)
-
+        client.complete(with: clientError)
         XCTAssertEqual(capturedErrors, [.connectivity])
     }
 
@@ -64,6 +63,10 @@ final class RemoteFeedsLoaderTest: XCTestCase {
             completions.append(onCompletion)
             requestedURLs.append(url)
             print(">>> Loading data from \(url)")
+        }
+
+        func complete(with error: Error, at index: Int = 0) {
+            completions[0](error)
         }
     }
 }
