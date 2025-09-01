@@ -40,7 +40,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
 
     func test_load_deliverErrorOnClientError(){
         let (loader, client) = makeSUT()
-        expect(loader, toCompleteWithResult:.failure( .connectivity)) {
+        expect(loader, toCompleteWithResult:.failure( RemoteFeedLoader.Error.connectivity)) {
             let clientError = NSError(domain: "No Network", code: 299, userInfo: nil)
             client.complete(with: clientError)
         }
@@ -51,7 +51,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
         let sampleCodes = [199, 201, 300, 400, 500]
 
         sampleCodes.enumerated().forEach { index, code in
-            expect(loader, toCompleteWithResult: .failure(.invalidData)) {
+            expect(loader, toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)) {
                 let jsonData = makeItemJSONData([])
                 client.complete(withStatusCode: code, data: jsonData, at: index)
             }
@@ -60,7 +60,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
 
     func test_load_deliverErrorOn200HttpResponseWithInvalidJSON(){
         let (loader, client) = makeSUT()
-        expect(loader, toCompleteWithResult: .failure(.invalidData)) {
+        expect(loader, toCompleteWithResult: .failure(RemoteFeedLoader.Error.invalidData)) {
             let invalidJSON = Data("invalid json".utf8)
             client.complete(withStatusCode: 200, data: invalidJSON)
         }
@@ -149,7 +149,7 @@ final class RemoteFeedsLoaderTest: XCTestCase {
             switch (receivedResult, expectedResult) {
             case let (.success(receivedItems), .success(expctedItems)):
                 XCTAssertEqual(receivedItems, expctedItems, file: file, line: line)
-            case let(.failure(receivedError), .failure(expectedError)):
+            case let(.failure(receivedError as RemoteFeedLoader.Error), .failure(expectedError as RemoteFeedLoader.Error)):
                 XCTAssertEqual(receivedError, expectedError)
             default:
                 XCTFail("Expected \(expectedResult), got \(receivedResult) instead", file: file, line: line)
