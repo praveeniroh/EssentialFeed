@@ -16,7 +16,7 @@ class URLSessionHTTPClient {
     }
 
     func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        let url = URL(string: "https://somewrong-url.com")!
+//        let url = URL(string: "https://somewrong-url.com")! //URL Mismatch Failing case
         session.dataTask(with: url) { _, _, error in
             if let error {
                 completion(.failure(error))
@@ -26,6 +26,21 @@ class URLSessionHTTPClient {
 }
 
 final class URLSessionHTTPClientTests: XCTestCase {
+
+    func test_getFromURL_performGETRequestWithURL() {
+        URLProtocolStub.startInterceptingRequest()
+        let url = URL(string: "https://some-url.com")!
+
+        let expectation = expectation(description: "Wait for GET request ")
+        URLProtocolStub.observeReqeust{ request in
+            XCTAssertEqual(request.url, url)
+            XCTAssertEqual(request.httpMethod, "GET")
+            expectation.fulfill()
+        }
+        URLSessionHTTPClient().get(from: url) { _ in }
+        wait(for: [expectation], timeout: 1.0)
+        URLProtocolStub.stopInterceptingRequest()
+    }
 
     func test_getFromURL_resumeDataTaskWithError() {
         URLProtocolStub.startInterceptingRequest()
@@ -52,6 +67,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
     //MARK: Helpers
     private class URLProtocolStub: URLProtocol {
         private static var stub: Stub?
+        private static var requestObserver: ((URLRequest) -> Void)?
 
         private struct Stub {
             let data: Data?
@@ -63,6 +79,10 @@ final class URLSessionHTTPClientTests: XCTestCase {
             stub = Stub(data: data, response: response, error: error)
         }
 
+        static func observeReqeust(observer: ((URLRequest) -> Void)?) {
+            requestObserver = observer
+        }
+
         static func startInterceptingRequest() {
             URLProtocol.registerClass(URLProtocolStub.self)
         }
@@ -70,9 +90,11 @@ final class URLSessionHTTPClientTests: XCTestCase {
         static func stopInterceptingRequest() {
             URLProtocol.unregisterClass(URLProtocolStub.self)
             stub = nil
+            requestObserver = nil
         }
 
         override class func canInit(with request: URLRequest) -> Bool {
+            Self.requestObserver?(request)
             return true //Intercepting all requests
         }
 
