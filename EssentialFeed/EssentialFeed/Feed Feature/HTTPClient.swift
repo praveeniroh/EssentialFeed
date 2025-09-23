@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol HTTPClient {
-    func load(from url: URL, onCompletion: @escaping (HTTPClientResult) -> Void)
+    func get(from url: URL, onCompletion: @escaping (HTTPClientResult) -> Void)
 }
 
 public enum HTTPClientResult{

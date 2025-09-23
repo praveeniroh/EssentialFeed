@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-class URLSessionHTTPClient {
+class URLSessionHTTPClient: HTTPClient{
     private let session: URLSession
 
     init(session: URLSession = .shared) {
@@ -17,15 +17,15 @@ class URLSessionHTTPClient {
 
     struct UnexpectedValuesRepresentaionError: Error {}
 
-    func get(from url: URL, completion: @escaping (HTTPClientResult) -> Void) {
+    func get(from url: URL, onCompletion: @escaping (HTTPClientResult) -> Void) {
 //        let url = URL(string: "https://somewrong-url.com")! //URL Mismatch Failing case
         session.dataTask(with: url) { data, response, error in
             if let error {
-                completion(.failure(error))
+                onCompletion(.failure(error))
             } else if let data, let httpURLResponse = response as? HTTPURLResponse {
-                completion(.success(data, httpURLResponse))
+                onCompletion(.success(data, httpURLResponse))
             } else {
-                completion(.failure(UnexpectedValuesRepresentaionError())) // Error supplied is nil
+                onCompletion(.failure(UnexpectedValuesRepresentaionError())) // Error supplied is nil
             }
         }.resume()
     }
@@ -100,7 +100,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
 
     //MARK: Helpers
 
-    private func makeSUT( file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+    private func makeSUT( file: StaticString = #filePath, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         trackForMemoryLead(sut,file: file, line: line)
         return sut

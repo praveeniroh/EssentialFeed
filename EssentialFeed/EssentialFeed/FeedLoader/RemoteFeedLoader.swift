@@ -24,7 +24,7 @@ public final class RemoteFeedLoader: FeedLoader {
     }
 
     public func load(completion onCompletion: @escaping (Result) -> Void) {
-        httpClient.load(from: url, onCompletion: { [weak self] response in
+        httpClient.get(from: url, onCompletion: { [weak self] response in
             guard self != nil else {return}
             switch response {
             case let .success(data, response):
