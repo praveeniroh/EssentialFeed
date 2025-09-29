@@ -10,6 +10,7 @@ import EssentialFeed
 
 class EssentialFeedAPIEndToEndUnitTests: XCTestCase {
 
+    //Testing with test server with fixed no of FeedItems
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() {
         let fixedDataCount = 8
         switch getFeedResult() {
