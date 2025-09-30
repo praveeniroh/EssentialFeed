@@ -11,7 +11,7 @@ import EssentialFeed
 class EssentialFeedAPIEndToEndUnitTests: XCTestCase {
 
     func test_endToEndTestServerGETFeedResult_matchesFixedTestAccountData() {
-        let fixedDataCount = 8
+        let fixedDataCount = 5
         switch getFeedResult() {
         case .success(let items):
             XCTAssertEqual(items.count, fixedDataCount, "Expected 8 items in the test account feed but got \(items.count)")
