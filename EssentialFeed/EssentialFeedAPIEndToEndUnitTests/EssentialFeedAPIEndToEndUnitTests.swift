@@ -8,7 +8,6 @@
 import XCTest
 import EssentialFeed
 
-///End to End macOS test cases
 class EssentialFeedAPIEndToEndUnitTests: XCTestCase {
 
     //Testing with test server with fixed no of FeedItems
