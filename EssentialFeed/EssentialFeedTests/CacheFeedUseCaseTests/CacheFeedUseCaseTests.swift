@@ -29,13 +29,13 @@ class LocalFeedLoader {
             guard let self else {
                 return
             }
-            if error == nil {
+            if let error {
+                completion(error)
+            } else {
                 store.insert(feedItems, timestamp: currentDate()) { [weak self] error in
                     guard let self else { return}
                     completion(error)
                 }
-            } else {
-                completion(error)
             }
         }
     }
