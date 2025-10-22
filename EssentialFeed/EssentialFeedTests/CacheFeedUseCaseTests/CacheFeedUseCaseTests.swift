@@ -32,11 +32,15 @@ class LocalFeedLoader {
             if let error {
                 completion(error)
             } else {
-                store.insert(feedItems, timestamp: currentDate()) { [weak self] error in
-                    guard let self else { return}
-                    completion(error)
-                }
+                insert(feedItems, completion: completion)
             }
+        }
+    }
+
+    private func insert(_ items: [FeedItem], completion: @escaping (Error?) -> Void) {
+        store.insert(items, timestamp: currentDate()) { [weak self] error in
+            guard self != nil else { return}
+            completion(error)
         }
     }
 }
