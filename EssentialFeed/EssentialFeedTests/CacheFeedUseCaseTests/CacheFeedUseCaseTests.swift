@@ -42,6 +42,10 @@ class FeedStore {
     func completeInsertion(with error: Error?, at index: Int = 0) {
         insertionCompletion[index](error)
     }
+
+    func completeInsertionSuccessfully(at index: Int = 0) {
+        insertionCompletion[index](nil)
+    }
 }
 
 class LocalFeedLoader {
@@ -128,6 +132,23 @@ final class CacheFeedUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
 
         XCTAssertEqual(insertionError, capturedError as? NSError)
+    }
+
+    func test_save_succeedsOnSuccessfulCacheInsertion() {
+        let (sut, store) = makeSUT()
+        let feedItems = [uniqueItems(), uniqueItems()]
+        var capturedError: Error?
+        let exp = expectation(description: "Wait for save completion")
+
+        sut.save(feedItems) { error in
+            capturedError = error
+            exp.fulfill()
+        }
+        store.completeDeletionSuccessfully()
+        store.completeInsertionSuccessfully()
+        wait(for: [exp], timeout: 1.0)
+
+        XCTAssertNil(capturedError)
     }
 
     //MARK: - Helpers
