@@ -23,45 +23,4 @@ final class LoadFeedFromCacheUsecaseTests: XCTestCase {
         trackForMemoryLead(store, file: file, line: line)
         return (sut, store)
     }
-
-    private class FeedStoreSpy: FeedStore {
-        typealias DeletionCompletion = (Error?) -> Void
-        typealias InsertionCompletion = (Error?) -> Void
-
-        var deletionCompletion = [DeletionCompletion]()
-        var insertionCompletion = [InsertionCompletion]()
-
-        enum ReceivedMessage: Equatable {
-            case deleteCachedFeed
-            case insert(feedItems: [LocalFeedImage], timestamp: Date)
-        }
-
-        private(set) var receivedMessages: [ReceivedMessage] = []
-        func deleteCachedFeed(completion: @escaping DeletionCompletion) {
-            receivedMessages.append(.deleteCachedFeed)
-            deletionCompletion.append(completion)
-        }
-
-        func completeDeletion(with error: Error?, at index: Int = 0) {
-            deletionCompletion[index](error)
-        }
-
-        func completeDeletionSuccessfully(at index: Int = 0) {
-            deletionCompletion[index](nil)
-        }
-
-        func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCompletion) {
-            insertionCompletion.append(completion)
-            receivedMessages.append(.insert(feedItems: feed, timestamp: timestamp))
-        }
-
-        func completeInsertion(with error: Error?, at index: Int = 0) {
-            insertionCompletion[index](error)
-        }
-
-        func completeInsertionSuccessfully(at index: Int = 0) {
-            insertionCompletion[index](nil)
-        }
-    }
-
 }
