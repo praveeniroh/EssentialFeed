@@ -55,4 +55,8 @@ class FeedStoreSpy: FeedStore {
     func completeInsertionSuccessfully(at index: Int = 0) {
         insertionCompletion[index](nil)
     }
+
+    func completeWithEmptyCache(at index: Int = 0) {
+        retrivalCompltion[0](nil)
+    }
 }
