@@ -11,7 +11,7 @@ import Foundation
 public final class LocalFeedLoader {
 
     public typealias SaveResult = Error?
-    public typealias LoadResult = LoadFeedResult?
+    public typealias LoadResult = LoadFeedResult
 
     private let store: FeedStore
     private let currentDate: () -> Date
@@ -45,8 +45,9 @@ public final class LocalFeedLoader {
         }
     }
 
-    public func load(completion: @escaping (LoadResult?) -> Void) {
-        store.retrive { [unowned self] result in
+    public func load(completion: @escaping (LoadResult) -> Void) {
+        store.retrive { [weak self] result in
+            guard let self else {return}
             switch result {
             case let .failure(error):
                 store.deleteCachedFeed { _ in }
