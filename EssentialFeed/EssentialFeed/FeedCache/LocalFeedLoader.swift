@@ -7,26 +7,36 @@
 
 import Foundation
 
-
-public final class LocalFeedLoader {
-
-    private let store: FeedStore
-    private let currentDate: () -> Date
+fileprivate final class FeedCachePolicy {
     private let calendar = Calendar(identifier: .gregorian)
     private var maxCacheAgeInDays: Int {
         7
     }
 
-    public init(store: FeedStore, currentDate: @autoclosure @escaping () -> Date) {
-        self.store = store
+    private let currentDate: () -> Date
+
+    init(currentDate: @escaping () -> Date) {
         self.currentDate = currentDate
     }
 
-    private func validate(_ timeStamp: Date) -> Bool {
+    func validate(_ timeStamp: Date) -> Bool {
         guard let maxCacheAge = calendar.date(byAdding: .day, value: maxCacheAgeInDays, to: timeStamp) else {
             return false
         }
         return currentDate() < maxCacheAge
+    }
+}
+
+public final class LocalFeedLoader {
+
+    private let store: FeedStore
+    private let currentDate: () -> Date
+    private let cachePolicy: FeedCachePolicy
+
+    public init(store: FeedStore, currentDate: @autoclosure @escaping () -> Date) {
+        self.store = store
+        self.currentDate = currentDate
+        cachePolicy = FeedCachePolicy(currentDate: currentDate)
     }
 }
 
@@ -64,7 +74,7 @@ extension LocalFeedLoader: FeedLoader {
             switch result {
             case let .failure(error):
                 completion(.failure(error))
-            case let .found(feed, timeStamp) where self.validate(timeStamp):
+            case let .found(feed, timeStamp) where self.cachePolicy.validate(timeStamp):
                 completion(.success(feed.toFeedItems()))
             case .found,.empty:
                 completion(.success([]))
@@ -82,7 +92,7 @@ extension LocalFeedLoader {
             switch result {
             case .failure:
                 store.deleteCachedFeed { _ in }
-            case let .found(_, timeStamp) where !validate(timeStamp):
+            case let .found(_, timeStamp) where !self.cachePolicy.validate(timeStamp):
                 store.deleteCachedFeed { _ in }
             default:
                 break
