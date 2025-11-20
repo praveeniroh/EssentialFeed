@@ -123,8 +123,10 @@ class CodableFeedStoreTests: XCTestCase {
     }
 
     //MARK: - Helpers
-    func makeSUT() -> CodableFeedStore {
-        CodableFeedStore()
+    func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> CodableFeedStore {
+        let sut = CodableFeedStore()
+        trackForMemoryLead(sut, file: file, line: line)
+        return sut
     }
 
 }
