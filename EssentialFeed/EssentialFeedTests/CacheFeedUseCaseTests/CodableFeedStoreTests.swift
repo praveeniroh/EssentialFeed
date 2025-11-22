@@ -86,12 +86,7 @@ class CodableFeedStoreTests: XCTestCase {
         let localFeed = uniqueImageFeed().local
         let timeStamp = Date()
 
-        let expectation = expectation(description: "Wait for insertion to complete")
-        sut.insert(localFeed, timestamp: timeStamp){ error in
-            XCTAssertNil(error, "Expected feed to be inserted successfully")
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        insert((localFeed, timeStamp), to: sut)
         expect(sut, toRetrive: .found(feed: localFeed, timeStamp: timeStamp))
     }
 
@@ -100,12 +95,7 @@ class CodableFeedStoreTests: XCTestCase {
         let localFeed = uniqueImageFeed().local
         let timeStamp = Date()
 
-        let expectation = expectation(description: "Wait for Insertion to complete")
-        sut.insert(localFeed, timestamp: timeStamp){ error in
-            XCTAssertNil(error, "Expected feed to be inserted successfully")
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        insert((localFeed, timeStamp), to: sut)
         expect(sut, toRetriveTwice: .found(feed: localFeed, timeStamp: timeStamp))
     }
 
@@ -131,6 +121,16 @@ class CodableFeedStoreTests: XCTestCase {
     private func deletesStoreArtifacts() {
         try? FileManager.default.removeItem(at: testSpecificStoreURL())
     }
+
+    private func insert(_ cache: (feed: [LocalFeedImage], timeStamp: Date), to sut: CodableFeedStore, file: StaticString = #filePath, line: UInt = #line) {
+        let expectation = expectation(description: "Wait for Insertion to complete")
+        sut.insert(cache.feed, timestamp: cache.timeStamp){ error in
+            XCTAssertNil(error, "Expected feed to be inserted successfully")
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1.0)
+    }
+
     private func expect(_ sut: CodableFeedStore, toRetriveTwice expectedResult: RetrieveCachedFeedResult, file: StaticString = #filePath, line: UInt = #line ) {
         expect(sut, toRetrive: expectedResult)
         expect(sut, toRetrive: expectedResult)
