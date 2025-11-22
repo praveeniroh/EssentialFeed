@@ -72,21 +72,12 @@ class CodableFeedStoreTests: XCTestCase {
 
     func test_retrive_deliversEmptyOnEmptyCache()  {
         let sut = makeSUT()
-        let expectation = expectation(description: "Wait for retrival to complete")
-        sut.retrive { result in
-            switch result {
-            case .empty:
-                break
-            default:
-                XCTFail("Expected empty but got \(result)")
-            }
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        expect(sut, toRetrive: .empty)
     }
 
     func test_retrive_hasNoSideEffectOnEmptyCache()  {
         let sut = makeSUT()
+        expect(sut, toRetrive: .empty)
         expect(sut, toRetrive: .empty)
     }
 
@@ -95,7 +86,7 @@ class CodableFeedStoreTests: XCTestCase {
         let localFeed = uniqueImageFeed().local
         let timeStamp = Date()
 
-        let expectation = expectation(description: "Wait for retrival to complete")
+        let expectation = expectation(description: "Wait for insertion to complete")
         sut.insert(localFeed, timestamp: timeStamp){ error in
             XCTAssertNil(error, "Expected feed to be inserted successfully")
             expectation.fulfill()
@@ -109,27 +100,13 @@ class CodableFeedStoreTests: XCTestCase {
         let localFeed = uniqueImageFeed().local
         let timeStamp = Date()
 
-        let expectation = expectation(description: "Wait for retrival to complete")
+        let expectation = expectation(description: "Wait for Insertion to complete")
         sut.insert(localFeed, timestamp: timeStamp){ error in
             XCTAssertNil(error, "Expected feed to be inserted successfully")
-            sut.retrive { firstResult in
-                sut.retrive { secondResult in
-
-                    switch (firstResult, secondResult) {
-                    case let (.found(firstFeed,firstTimeStamp),.found(secondFeed, secondTimeStamp)):
-                        XCTAssertEqual(localFeed, firstFeed)
-                        XCTAssertEqual(timeStamp, firstTimeStamp)
-
-                        XCTAssertEqual(localFeed, secondFeed)
-                        XCTAssertEqual(timeStamp, secondTimeStamp)
-                    default:
-                        XCTFail("Expected retrieving twice from non empty cache to deliver same found result with feed \(localFeed) and timestamp \(timeStamp), got \(firstResult) and \(secondResult) instead")
-                    }
-                    expectation.fulfill()
-                }
-            }
+            expectation.fulfill()
         }
         wait(for: [expectation], timeout: 1.0)
+        expect(sut, toRetriveTwice: .found(feed: localFeed, timeStamp: timeStamp))
     }
 
     //MARK: - Helpers
@@ -153,6 +130,10 @@ class CodableFeedStoreTests: XCTestCase {
 
     private func deletesStoreArtifacts() {
         try? FileManager.default.removeItem(at: testSpecificStoreURL())
+    }
+    private func expect(_ sut: CodableFeedStore, toRetriveTwice expectedResult: RetrieveCachedFeedResult, file: StaticString = #filePath, line: UInt = #line ) {
+        expect(sut, toRetrive: expectedResult)
+        expect(sut, toRetrive: expectedResult)
     }
 
     private func expect(_ sut: CodableFeedStore, toRetrive expectedResult: RetrieveCachedFeedResult, file: StaticString = #filePath, line: UInt = #line ) {
