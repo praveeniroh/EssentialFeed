@@ -156,28 +156,21 @@ class CodableFeedStoreTests: XCTestCase {
 
     func test_delete_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-        let expectation = expectation(description: "Wait for cache delete completion")
-        sut.deleteCachedFeed { deletionError in
-            XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+       let deletionError = deleteCache(sut)
+        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
+
         expect(sut, toRetrive: .empty)
     }
-
+    
     func test_delete_emptiesPreviouslyInsertedCache() {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timeStamp = Date()
 
         insert((feed, timeStamp), to: sut)
-        let expectation = expectation(description: "Wait for cache delete completion")
+        let deletionError = deleteCache(sut)
+        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
 
-        sut.deleteCachedFeed { deletionError in
-            XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
         expect(sut, toRetrive: .empty)
     }
 
@@ -236,5 +229,16 @@ class CodableFeedStoreTests: XCTestCase {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 1.0)
+    }
+
+    private func deleteCache(_ sut: CodableFeedStore) -> Error? {
+        let expectation = expectation(description: "Wait for cache delete completion")
+        var deletionError: Error?
+        sut.deleteCachedFeed { error in
+            deletionError = error
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 1.0)
+        return deletionError
     }
 }
