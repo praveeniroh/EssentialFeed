@@ -64,15 +64,31 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetriveTwice: .failure(anyNSError()))
     }
 
+    func test_insert_deliversNoErrorOnEmptyCache() {
+        let sut = makeSUT()
+
+        let insertionError = insert((uniqueImageFeed().local, Date()), to: sut)
+
+        XCTAssertNil(insertionError, "Expected insertion to be successful")
+    }
+
+    func test_insert_deliversNoErrorOnNonEmptyCache(){
+        let sut = makeSUT()
+
+        insert((uniqueImageFeed().local, Date()), to: sut)
+        let insertionError = insert((uniqueImageFeed().local, Date()), to: sut)
+
+        XCTAssertNil(insertionError, "Expected insertion to be successful")
+    }
+
     func test_insert_overridesPreviouslyInsertedCacheValues() {
         let sut = makeSUT()
-        let firstInsertionError = insert((uniqueImageFeed().local, Date()), to: sut)
-        XCTAssertNil(firstInsertionError)
+        insert((uniqueImageFeed().local, Date()), to: sut)
 
         let latesFeed = uniqueImageFeed().local
         let latestTimeStamp = Date()
-
         insert((latesFeed, latestTimeStamp), to: sut)
+
         expect(sut, toRetrive: .found(feed: latesFeed, timeStamp: latestTimeStamp))
     }
 
@@ -83,26 +99,53 @@ class CodableFeedStoreTests: XCTestCase {
         let timeStamp = Date()
 
         let insertionError = insert((localFeed, timeStamp), to: sut)
-        XCTAssertNotNil(insertionError)
 
+        XCTAssertNotNil(insertionError)
+    }
+
+    func test_insert_hasNoSideEffectsOnInsertionError() {
+        let invalidURL = URL(string: "invalid://somelocation")!
+        let sut = makeSUT(storeURL: invalidURL)
+        let localFeed = uniqueImageFeed().local
+        let timeStamp = Date()
+        
+        insert((localFeed, timeStamp), to: sut)
+        
+        expect(sut, toRetrive: .empty)
+    }
+
+    func test_delete_deliversNoErrorOnEmptyCache() {
+        let sut = makeSUT()
+
+        let deletionError = deleteCache(sut)
+
+        XCTAssertNil(deletionError, "Expected empty cache deletion to succeed")
     }
 
     func test_delete_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-       let deletionError = deleteCache(sut)
-        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
 
-        expect(sut, toRetrive: .empty)
+        let deletionError = deleteCache(sut)
+
+        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
     }
-    
+
+    func test_delete_deliversNoErrorOnNonEmptyCache(){
+        let sut = makeSUT()
+
+        insert((uniqueImageFeed().local, Date()), to: sut)
+        let deletionError = deleteCache(sut)
+
+        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
+    }
+
     func test_delete_emptiesPreviouslyInsertedCache() {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timeStamp = Date()
 
         insert((feed, timeStamp), to: sut)
-        let deletionError = deleteCache(sut)
-        XCTAssertNil(deletionError, "Expected to delete with no error, got \(String(describing: deletionError)) instead.")
+        deleteCache(sut)
 
         expect(sut, toRetrive: .empty)
     }
@@ -113,6 +156,15 @@ class CodableFeedStoreTests: XCTestCase {
         let deletionError = deleteCache(sut)
 
         XCTAssertNotNil(deletionError)
+
+        expect(sut, toRetrive: .empty)
+    }
+
+    func test_delete_hasNoSideEffectsOnDeletionError() {
+        let noDeletePermissionURL = cachesDirectory()
+        let sut = makeSUT(storeURL: noDeletePermissionURL)
+
+        deleteCache(sut)
 
         expect(sut, toRetrive: .empty)
     }
@@ -202,6 +254,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [expectation], timeout: 1.0)
     }
 
+    @discardableResult
     private func deleteCache(_ sut: FeedStore) -> Error? {
         let expectation = expectation(description: "Wait for cache delete completion")
         var deletionError: Error?
