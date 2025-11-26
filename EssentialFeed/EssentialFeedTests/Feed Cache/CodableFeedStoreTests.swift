@@ -43,15 +43,15 @@ class CodableFeedStoreTests: XCTestCase,FeedStoreFailableSpecs {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         try! "Invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
-        expect(sut, toRetrive: .failure(anyNSError()))
+        assertThatRetriveDeliversFailureOnRetivalError(sut)
     }
-
+    
     func test_retrive_hasNoSideEffectOnFailure() {
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         try! "Invalid data".write(to: storeURL, atomically: false, encoding: .utf8)
 
-        expect(sut, toRetriveTwice: .failure(anyNSError()))
+        assertThatRetriveHasNoSideEffectOnFailure(sut)
     }
     
     func test_insert_deliversNoErrorOnEmptyCache() {
