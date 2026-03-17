@@ -48,9 +48,12 @@ final class EssentialFeediOSTests: XCTestCase {
     func test_pullToRefresh_loadFeed() {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
+
         stimulatePullToRefresh(sut: sut)
         XCTAssertEqual(loader.loadCallCount, 2)
 
+        stimulatePullToRefresh(sut: sut)
+        XCTAssertEqual(loader.loadCallCount, 3)
     }
 
     // MARK: Helpers
