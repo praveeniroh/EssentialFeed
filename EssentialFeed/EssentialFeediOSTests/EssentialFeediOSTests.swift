@@ -8,7 +8,7 @@
 import XCTest
 import EssentialFeed
 
-class FeedViewController: UIViewController {
+class FeedViewController: UITableViewController {
     private let loader: FeedLoader
     init(loader: FeedLoader) {
         self.loader = loader
@@ -22,6 +22,12 @@ class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+        load()
+    }
+
+    @objc private func load() {
         loader.load(completion: {_ in })
     }
 }
@@ -39,6 +45,14 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(loader.loadCallCount, 1)
     }
 
+    func test_pullToRefresh_loadFeed() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        stimulatePullToRefresh(sut: sut)
+        XCTAssertEqual(loader.loadCallCount, 2)
+
+    }
+
     // MARK: Helpers
 
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
@@ -47,6 +61,14 @@ final class EssentialFeediOSTests: XCTestCase {
         trackForMemoryLead(sut, file: file, line: line)
         trackForMemoryLead(loader, file: file, line: line)
         return (sut, loader)
+    }
+
+    private func stimulatePullToRefresh(sut: FeedViewController) {
+        sut.refreshControl?.allTargets.forEach { target in
+            sut.refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                (target as NSObject).perform(Selector(action))
+            }
+        }
     }
 
     class LoaderSpy: FeedLoader {
