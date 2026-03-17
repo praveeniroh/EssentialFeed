@@ -6,10 +6,11 @@
 //
 
 import XCTest
+import EssentialFeed
 
 class FeedViewController: UIViewController {
-    private let loader: EssentialFeediOSTests.LoaderSpy
-    init(loader: EssentialFeediOSTests.LoaderSpy) {
+    private let loader: FeedLoader
+    init(loader: FeedLoader) {
         self.loader = loader
         super.init(nibName: nil, bundle: nil)
     }
@@ -21,7 +22,7 @@ class FeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        loader.load()
+        loader.load(completion: {_ in })
     }
 }
 
@@ -40,10 +41,11 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(loader.loadCallCount, 1)
     }
 
-    class LoaderSpy {
+    class LoaderSpy: FeedLoader {
+
         private(set) var loadCallCount: Int = 0
 
-        func load() {
+        func load(completion: @escaping (EssentialFeed.LoadFeedResult) -> Void) {
             loadCallCount += 1
         }
     }

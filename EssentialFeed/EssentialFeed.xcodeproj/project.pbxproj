@@ -19,7 +19,9 @@
 		622F673B2EC57A670069C643 /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F673A2EC57A670069C643 /* SharedTestHelpers.swift */; };
 		622F673C2EC57A670069C643 /* SharedTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 622F673A2EC57A670069C643 /* SharedTestHelpers.swift */; };
 		6233C2A62EC8B2B90000C466 /* FeedCachePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6233C2A52EC8B2B90000C466 /* FeedCachePolicy.swift */; };
-		623C7CD12F6859B800ED298F /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; platformFilter = ios; };
+		623C7CEC2F6867A300ED298F /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; platformFilter = ios; };
+		623C7CED2F6867A300ED298F /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 080EDEF121B6DA7E00813479 /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		623C7CF12F68E92300ED298F /* XCTestCase+MemoryLeakTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 627881E82E7FC4540033D861 /* XCTestCase+MemoryLeakTracking.swift */; };
 		6263F3632EA09D4D007ECCE8 /* CacheFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6263F3622EA09D4D007ECCE8 /* CacheFeedUseCaseTests.swift */; };
 		6263F3802EA91432007ECCE8 /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6263F37F2EA91432007ECCE8 /* FeedStore.swift */; };
 		6263F3822EA914B0007ECCE8 /* LocalFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6263F3812EA914B0007ECCE8 /* LocalFeedLoader.swift */; };
@@ -44,7 +46,7 @@
 			remoteGlobalIDString = 080EDEF021B6DA7E00813479;
 			remoteInfo = EssentialFeed;
 		};
-		623C7CD22F6859B800ED298F /* PBXContainerItemProxy */ = {
+		623C7CEE2F6867A300ED298F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 080EDEE821B6DA7E00813479 /* Project object */;
 			proxyType = 1;
@@ -59,6 +61,20 @@
 			remoteInfo = EssentialFeed;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		623C7CF02F6867A300ED298F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				623C7CED2F6867A300ED298F /* EssentialFeed.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		080EDEF121B6DA7E00813479 /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,7 +135,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				623C7CD12F6859B800ED298F /* EssentialFeed.framework in Frameworks */,
+				623C7CEC2F6867A300ED298F /* EssentialFeed.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +158,7 @@
 				080EDEFE21B6DA7E00813479 /* EssentialFeedTests */,
 				62E201292E894B0E00ED1062 /* EssentialFeedAPIEndToEndUnitTests */,
 				623C7CCE2F6859B800ED298F /* EssentialFeediOSTests */,
+				623C7CEB2F6867A300ED298F /* Frameworks */,
 				080EDEF221B6DA7E00813479 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -199,6 +216,13 @@
 				080EDF0D21B6DCB600813479 /* FeedLoader.swift */,
 			);
 			path = "Feed Feature";
+			sourceTree = "<group>";
+		};
+		623C7CEB2F6867A300ED298F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		6263F35F2EA09D15007ECCE8 /* Feed Cache */ = {
@@ -312,11 +336,12 @@
 				623C7CC92F6859B800ED298F /* Sources */,
 				623C7CCA2F6859B800ED298F /* Frameworks */,
 				623C7CCB2F6859B800ED298F /* Resources */,
+				623C7CF02F6867A300ED298F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				623C7CD32F6859B800ED298F /* PBXTargetDependency */,
+				623C7CEF2F6867A300ED298F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				623C7CCE2F6859B800ED298F /* EssentialFeediOSTests */,
@@ -471,6 +496,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				623C7CF12F68E92300ED298F /* XCTestCase+MemoryLeakTracking.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,11 +517,11 @@
 			target = 080EDEF021B6DA7E00813479 /* EssentialFeed */;
 			targetProxy = 080EDEFC21B6DA7E00813479 /* PBXContainerItemProxy */;
 		};
-		623C7CD32F6859B800ED298F /* PBXTargetDependency */ = {
+		623C7CEF2F6867A300ED298F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			platformFilter = ios;
 			target = 080EDEF021B6DA7E00813479 /* EssentialFeed */;
-			targetProxy = 623C7CD22F6859B800ED298F /* PBXContainerItemProxy */;
+			targetProxy = 623C7CEE2F6867A300ED298F /* PBXContainerItemProxy */;
 		};
 		62E2012E2E894B0E00ED1062 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -764,6 +790,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -789,6 +819,10 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
