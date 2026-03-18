@@ -62,10 +62,10 @@ final class EssentialFeediOSTests: XCTestCase {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
 
-        stimulatePullToRefresh(sut: sut)
+        sut.stimulateUserInitiatedPulltoRefresh()
         XCTAssertEqual(loader.loadCallCount, 2)
 
-        stimulatePullToRefresh(sut: sut)
+        sut.stimulateUserInitiatedPulltoRefresh()
         XCTAssertEqual(loader.loadCallCount, 3)
     }
 
@@ -91,7 +91,7 @@ final class EssentialFeediOSTests: XCTestCase {
         sut.simulateAppearence()
         loader.completeFeedLoading()
 
-        stimulatePullToRefresh(sut: sut)
+        sut.stimulateUserInitiatedPulltoRefresh()
 
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
     }
@@ -99,7 +99,7 @@ final class EssentialFeediOSTests: XCTestCase {
     func test_pullToRefresh_HideLoadingIndicatorAfterSuccess() {
         let (sut, loader) = makeSUT()
 
-        stimulatePullToRefresh(sut: sut)
+        sut.stimulateUserInitiatedPulltoRefresh()
         loader.completeFeedLoading()
 
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
@@ -114,14 +114,6 @@ final class EssentialFeediOSTests: XCTestCase {
         trackForMemoryLead(sut, file: file, line: line)
         trackForMemoryLead(loader, file: file, line: line)
         return (sut, loader)
-    }
-
-    private func stimulatePullToRefresh(sut: FeedViewController) {
-        sut.refreshControl?.allTargets.forEach { target in
-            sut.refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
-                (target as NSObject).perform(Selector(action))
-            }
-        }
     }
 
     class LoaderSpy: FeedLoader {
@@ -140,7 +132,22 @@ final class EssentialFeediOSTests: XCTestCase {
     }
 }
 
+fileprivate extension UIRefreshControl {
+    func stimulatePullToRefresh() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                (target as NSObject).perform(Selector(action))
+            }
+        }
+    }
+
+}
 fileprivate extension FeedViewController {
+
+    func stimulateUserInitiatedPulltoRefresh() {
+        refreshControl?.stimulatePullToRefresh()
+    }
+
     func simulateAppearence() {
         if !isViewLoaded {
             loadViewIfNeeded()
