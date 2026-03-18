@@ -38,6 +38,7 @@ class FeedViewController: UITableViewController {
     }
 
     @objc private func load() {
+        startRefreshing()
         loader.load{[weak self]_ in
             self?.refreshControl?.endRefreshing()
         }
@@ -82,6 +83,17 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeFeedLoading()
 
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
+    }
+
+    func test_pullToRefresh_showLoadingIndicator() {
+        let (sut, loader) = makeSUT()
+
+        sut.simulateAppearence()
+        loader.completeFeedLoading()
+
+        stimulatePullToRefresh(sut: sut)
+
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
     }
 
     // MARK: Helpers
