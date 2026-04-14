@@ -39,6 +39,11 @@ final class EssentialFeediOSTests: XCTestCase {
 
         loader.completeFeedLoading(at: 1)
         XCTAssertFalse(sut.isShowingLoadingIndicator)
+
+        sut.stimulateUserInitiatedPulltoRefresh()
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        loader.completeFeedLoadingWithError(at: 2)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
 
     func test_loadFeedCompletion_rendersSuccessfullyLoadedFeed() {
@@ -58,6 +63,18 @@ final class EssentialFeediOSTests: XCTestCase {
         assertThat(sut, isRendering: [image0,image1, image2, image3])
     }
 
+    func test_loadFeedCompletion_doesNotAlterLoadedImageOnError() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(description: "a description", location: "a location")
+        sut.simulateAppearence()
+        loader.completeFeedLoading(with: [image0], at: 0)
+        assertThat(sut, isRendering: [image0])
+        
+        sut.stimulateUserInitiatedPulltoRefresh()
+        loader.completeFeedLoadingWithError(at: 1)
+        assertThat(sut, isRendering: [image0])
+    }
+
 
     // MARK: Helpers
 
@@ -73,9 +90,9 @@ final class EssentialFeediOSTests: XCTestCase {
         FeedImage(id: UUID(), description: description, location: location, url: url)
     }
 
-    private func assertThat(_ sut: FeedViewController, isRendering images: [FeedImage]) {
+    private func assertThat(_ sut: FeedViewController, isRendering images: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         guard sut.numberOfRenderedFeedImageViews() == images.count else {
-            return XCTFail("Expected to render \(images.count) but only \(sut.numberOfRenderedFeedImageViews()) rendered")
+            return XCTFail("Expected to render \(images.count) but only \(sut.numberOfRenderedFeedImageViews()) rendered",file: file, line: line )
         }
 
         images.enumerated().forEach({assertThat(sut, hasViewConfigured: $0.1, at: $0.0)})
@@ -102,6 +119,11 @@ final class EssentialFeediOSTests: XCTestCase {
 
         func completeFeedLoading(with feedImages: [FeedImage] = [],at index: Int = 0) {
             completions[index](.success(feedImages))
+        }
+
+        func completeFeedLoadingWithError(at index: Int) {
+            let error = NSError(domain: "test", code: 0, userInfo: nil)
+            completions[index](.failure(error))
         }
     }
 }
