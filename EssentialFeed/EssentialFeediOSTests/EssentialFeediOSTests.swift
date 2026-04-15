@@ -75,12 +75,29 @@ final class EssentialFeediOSTests: XCTestCase {
         assertThat(sut, isRendering: [image0])
     }
 
+    func test_feedImageView_loadsFeedImageOnVisible() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
+        let (sut, loader) = makeSUT()
+
+        sut.loadViewIfNeeded()
+        loader.completeFeedLoading(with: [image0, image1])
+
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL requests until views become visible")
+
+        sut.simulateFeedImageViewVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url], "Expected first image URL request once first view becomes visible")
+
+        sut.simulateFeedImageViewVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url], "Expected second image URL request once second view also becomes visible")
+    }
+
 
     // MARK: Helpers
 
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedViewController(loader: loader)
+        let sut = FeedViewController(feedLoader: loader, imageLoader: loader)
         trackForMemoryLead(sut, file: file, line: line)
         trackForMemoryLead(loader, file: file, line: line)
         return (sut, loader)
@@ -107,11 +124,13 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view.descriptionText, image.description, file: file, line: line)
     }
 
-    class LoaderSpy: FeedLoader {
+    class LoaderSpy: FeedLoader, FeedImageDataLoader {
         private var completions: [(EssentialFeed.LoadFeedResult) -> Void] = []
         var loadCallCount: Int {
             completions.count
         }
+
+        private(set) var loadedImageURLs: [URL] = []
 
         func load(completion: @escaping (EssentialFeed.LoadFeedResult) -> Void) {
             completions.append(completion)
@@ -124,6 +143,10 @@ final class EssentialFeediOSTests: XCTestCase {
         func completeFeedLoadingWithError(at index: Int) {
             let error = NSError(domain: "test", code: 0, userInfo: nil)
             completions[index](.failure(error))
+        }
+
+        func loadImageData(from url: URL) {
+            loadedImageURLs.append(url)
         }
     }
 }
@@ -154,6 +177,10 @@ fileprivate extension FeedViewController {
         }
         beginAppearanceTransition(true, animated: false)
         endAppearanceTransition()
+    }
+
+    func simulateFeedImageViewVisible(at index: Int) {
+            _ = feedImageView(at: index)
     }
 
     func replaceRefreshControlWithFake() {
