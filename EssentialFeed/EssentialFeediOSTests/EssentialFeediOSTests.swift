@@ -164,12 +164,18 @@ final class EssentialFeediOSTests: XCTestCase {
             completions[index](.failure(error))
         }
 
-        func loadImageData(from url: URL) {
-            loadedImageURLs.append(url)
+        struct LoaderTaskSpy: FeedImageDataLoaderTask {
+            let cancelCallback: () -> Void
+            func cancel() {
+                cancelCallback()
+            }
         }
 
-        func cancelImageDataLoad(for url: URL) {
-            cancelledImageURLs.append(url)
+        func loadImageData(from url: URL) -> FeedImageDataLoaderTask{
+            loadedImageURLs.append(url)
+            return LoaderTaskSpy {[weak self] in
+                self?.cancelledImageURLs.append(url)
+            }
         }
     }
 }
