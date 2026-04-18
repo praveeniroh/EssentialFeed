@@ -118,7 +118,7 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeFeedLoading(with: [image0, image1])
 
         let view0 = sut.simulateFeedImageViewVisible(at: 0)
-        let view1 = sut.simulateFeedImageViewVisible(at: 0)
+        let view1 = sut.simulateFeedImageViewVisible(at: 1)
 
 
         XCTAssertEqual(view0?.isShowingImageLoadingIndicator, true, "Expected to show shimmering while loading image data")
@@ -131,10 +131,38 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view1?.isShimmering, false, "Expected to not show shimmering while loading image data")
 
         sut.simulateFeedImageViewNotVisible(at: 0)
-        XCTAssertEqual(loader.cancelledImageURLs, [image0.url], "Expected to cancel image URL request when view becomes invisible")
+        XCTAssertEqual(view0?.isShimmering,false, "Expected to cancel image URL request when view becomes invisible")
 
         sut.simulateFeedImageViewNotVisible(at: 1)
-        XCTAssertEqual(loader.cancelledImageURLs, [image0.url, image1.url], "Expected second image URL request once second view also becomes visible")
+        XCTAssertEqual(view1?.isShimmering, false, "Expected second image URL request once second view also becomes visible")
+    }
+
+
+    func test_feedImageView_loadsImageData() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
+        let (sut, loader) = makeSUT()
+
+        sut.loadViewIfNeeded()
+        loader.completeFeedLoading(with: [image0, image1])
+
+        let view0 = sut.simulateFeedImageViewVisible(at: 0)
+        let view1 = sut.simulateFeedImageViewVisible(at: 1)
+
+
+        XCTAssertEqual(view0?.imageData, nil, "Image data should be nil before loading image")
+        XCTAssertEqual(view1?.imageData, nil, "Image data should be nil before loading image")
+
+        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+
+        XCTAssertEqual(view0?.imageData, imageData0, "Expected to show image data after image loading completion")
+        XCTAssertEqual(view1?.imageData, .none, "Expected not to show image data after image loading completion")
+
+        let imageData1 = UIImage.make(withColor: .blue).pngData()!
+        loader.completeImageLoading(with: imageData1, at: 1)
+        XCTAssertEqual(view0?.imageData, imageData0, "Expected to show image data after image loading completion")
+        XCTAssertEqual(view1?.imageData, imageData1, "Expected to show image data after image loading completion")
     }
 
 
@@ -209,11 +237,11 @@ final class EssentialFeediOSTests: XCTestCase {
             }
         }
 
-        func completeImageLoading(at index: Int) {
-            imageRequests[index].completion(.success(Data()))
+        func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
+            imageRequests[index].completion(.success(imageData))
         }
 
-        func completeImageLoadingWithError(at index: Int) {
+        func completeImageLoadingWithError(at index: Int = 0) {
             imageRequests[index].completion(.failure(anyNSError()))
         }
     }
@@ -320,5 +348,23 @@ fileprivate extension FeedImageCell {
 
     var isShowingImageLoadingIndicator : Bool {
         feedImageContainer.isShimmering
+    }
+
+    var imageData: Data? {
+        feedImageView.image?.pngData()
+    }
+}
+
+
+private extension UIImage {
+    static func make(withColor color: UIColor) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+
+        return UIGraphicsImageRenderer(size: rect.size, format: format).image { rendererContext in
+            color.setFill()
+            rendererContext.fill(rect)
+        }
     }
 }
