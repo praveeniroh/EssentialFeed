@@ -206,6 +206,28 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view?.showsRetryButton, true, "Expected to show retry button when image data is invalid")
     }
 
+    func test_feedImageViewRetryButtonAction_retriedImageLoading() {
+        let image0 = makeImage(url: URL(string: "http://url-0.com")!)
+        let image1 = makeImage(url: URL(string: "http://url-1.com")!)
+
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearence()
+
+        loader.completeFeedLoading(with: [image0, image1])
+
+        let view0 = sut.simulateFeedImageViewVisible(at: 0)
+        let view1 = sut.simulateFeedImageViewVisible(at: 1)
+
+        loader.completeImageLoadingWithError(at: 0)
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url])
+
+        view0?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url, image0.url])
+
+        view1?.simulateRetryAction()
+        XCTAssertEqual(loader.loadedImageURLs, [image0.url, image1.url, image0.url, image1.url])
+    }
 
     // MARK: Helpers
 
@@ -297,6 +319,16 @@ fileprivate extension UIRefreshControl {
         }
     }
 
+}
+
+fileprivate extension UIButton {
+    func stimulateTouchUpInsideAction() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .touchUpInside)?.forEach { action in
+                (target as NSObject).perform(Selector(action))
+            }
+        }
+    }
 }
 fileprivate extension FeedViewController {
     var isShowingLoadingIndicator: Bool {
@@ -397,6 +429,10 @@ fileprivate extension FeedImageCell {
 
     var showsRetryButton: Bool {
         !feedImageRetryButton.isHidden
+    }
+
+    func simulateRetryAction() {
+        feedImageRetryButton.stimulateTouchUpInsideAction()
     }
 }
 
