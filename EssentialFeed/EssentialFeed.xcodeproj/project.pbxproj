@@ -116,9 +116,10 @@
 			membershipExceptions = (
 				"Feed Image Loader/FeedImageDataLoader.swift",
 				"Feed Image Loader/FeedImageDataLoaderTask.swift",
+				"Feed UI/Controllers/FeedImageCellController.swift",
 				"Feed UI/Controllers/FeedViewController.swift",
+				"Feed UI/Controllers/RefreshController.swift",
 				"Feed UI/Views/FeedImageCell.swift",
-				"Feed UI/Views/RefreshController.swift",
 				"Feed UI/Views/UIView+ShimmerLoading.swift",
 			);
 			target = 62E201272E894B0E00ED1062 /* EssentialFeedAPIEndToEndUnitTests */;
@@ -128,9 +129,10 @@
 			membershipExceptions = (
 				"Feed Image Loader/FeedImageDataLoader.swift",
 				"Feed Image Loader/FeedImageDataLoaderTask.swift",
+				"Feed UI/Controllers/FeedImageCellController.swift",
 				"Feed UI/Controllers/FeedViewController.swift",
+				"Feed UI/Controllers/RefreshController.swift",
 				"Feed UI/Views/FeedImageCell.swift",
-				"Feed UI/Views/RefreshController.swift",
 				"Feed UI/Views/UIView+ShimmerLoading.swift",
 			);
 			target = 623C7CCC2F6859B800ED298F /* EssentialFeediOSTests */;
