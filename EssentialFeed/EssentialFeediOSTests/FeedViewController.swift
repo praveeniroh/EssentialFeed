@@ -78,8 +78,11 @@ public final class FeedViewController: UITableViewController {
         imageLoaderTask[indexPath] = imageLoader?.loadImageData(from: cellModel.url) {[weak cell] result in
             switch result {
             case .success(let imageData):
-                let image = UIImage(data: imageData)
-                cell?.feedImageView.image = image
+                if let image = UIImage(data: imageData) {
+                    cell?.feedImageView.image = image
+                } else {
+                    cell?.feedImageRetryButton.isHidden = false
+                }
             case .failure:
                 cell?.feedImageRetryButton.isHidden = false
             }

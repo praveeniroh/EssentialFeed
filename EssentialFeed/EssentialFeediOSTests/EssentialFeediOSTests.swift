@@ -191,6 +191,21 @@ final class EssentialFeediOSTests: XCTestCase {
         XCTAssertEqual(view1?.showsRetryButton, true, "Expected to show retry button after image loading fails")
     }
 
+    func test_feedImageViewRetryButton_visibleOnInvalidData() {
+        let feedImage = makeImage()
+        let (sut, loader) = makeSUT()
+
+        sut.simulateAppearence()
+        loader.completeFeedLoading(with: [feedImage])
+
+        let view = sut.simulateFeedImageViewVisible(at: 0)
+
+        let invalidImageData = Data("invalid data".utf8)
+        loader.completeImageLoading(with: invalidImageData, at: 0)
+
+        XCTAssertEqual(view?.showsRetryButton, true, "Expected to show retry button when image data is invalid")
+    }
+
 
     // MARK: Helpers
 
