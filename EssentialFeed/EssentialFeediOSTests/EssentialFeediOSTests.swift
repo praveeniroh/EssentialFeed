@@ -362,6 +362,7 @@ fileprivate extension UIButton {
         }
     }
 }
+
 fileprivate extension FeedViewController {
     var isShowingLoadingIndicator: Bool {
         refreshControl?.isRefreshing == true
@@ -403,7 +404,7 @@ fileprivate extension FeedViewController {
             }
         }
         refreshControl = fake
-
+        self.refreshController?.view = fake
     }
 
     func numberOfRenderedFeedImageViews() -> Int{

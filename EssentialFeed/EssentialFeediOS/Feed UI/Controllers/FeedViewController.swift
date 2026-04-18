@@ -15,9 +15,13 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     private var tableModel = [FeedImage]()
 
     private var imageLoaderTask = [IndexPath: FeedImageDataLoaderTask]()
+
+    private(set) public var refreshController: RefreshController?
+
     public init(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader?) {
         self.feedLoader = feedLoader
         self.imageLoader = imageLoader
+        self.refreshController = RefreshController(feedLoader: feedLoader)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,11 +31,13 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+        refreshController?.onRefresh = {[weak self ] feed in
+            self?.tableModel = feed
+            self?.tableView.reloadData()
+        }
+        refreshControl = refreshController?.view
         tableView.prefetchDataSource = self
-        load()
+        refreshController?.refresh()
     }
 
     public override func viewIsAppearing(_ animated: Bool) {
@@ -42,17 +48,6 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     private func startRefreshing(){
         refreshControl?.beginRefreshing()
 
-    }
-
-    @objc private func load() {
-        startRefreshing()
-        feedLoader.load{[weak self]result in
-            if let feed = try? result.get() {
-                self?.tableModel = feed
-                self?.tableView.reloadData()
-            }
-            self?.refreshControl?.endRefreshing()
-        }
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
