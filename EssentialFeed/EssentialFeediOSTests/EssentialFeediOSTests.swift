@@ -265,7 +265,7 @@ final class EssentialFeediOSTests: XCTestCase {
 
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedViewController(feedLoader: loader, imageLoader: loader)
+        let sut = FeedUIComposer.makeFeedViewController(feedLoader: loader, imageLoader: loader)
         trackForMemoryLead(sut, file: file, line: line)
         trackForMemoryLead(loader, file: file, line: line)
         return (sut, loader)
