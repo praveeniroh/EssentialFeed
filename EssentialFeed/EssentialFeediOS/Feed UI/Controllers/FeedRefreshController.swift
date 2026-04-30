@@ -16,19 +16,28 @@ public class FeedRefreshController: NSObject {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
         return refreshControl
     }()
-    private let feedLoader: FeedLoader
+    private let feedViewModel: FeedViewModel
     public var onRefresh: (([FeedImage])->Void)?
     init(feedLoader: FeedLoader) {
-        self.feedLoader = feedLoader
+        self.feedViewModel = FeedViewModel(feedLoader: feedLoader)
     }
 
     @objc func refresh() {
-        view.beginRefreshing()
-        feedLoader.load{[weak self]result in
-            if let feed = try? result.get() {
-                self?.onRefresh?(feed)
+        feedViewModel.onChange = {[weak self]viewModel in
+            guard let self else {return}
+            if viewModel.isLoading {
+                view.beginRefreshing()
+            } else {
+                view.endRefreshing()
             }
-            self?.view.endRefreshing()
+            if let feed = viewModel.feed {
+                self.onRefresh?(feed)
+            }
         }
+        feedViewModel.loadFeed()
+    }
+
+    private func bind(_ view: UIRefreshControl) {
+
     }
 }
