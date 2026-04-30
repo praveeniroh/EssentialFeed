@@ -119,7 +119,6 @@
 				"Feed UI/Composers/FeedUIComposer.swift",
 				"Feed UI/Controllers/FeedImageCellController.swift",
 				"Feed UI/Controllers/FeedViewController.swift",
-				"Feed UI/Controllers/RefreshController.swift",
 				"Feed UI/Views/FeedImageCell.swift",
 				"Feed UI/Views/UIView+ShimmerLoading.swift",
 			);
@@ -132,8 +131,8 @@
 				"Feed Image Loader/FeedImageDataLoaderTask.swift",
 				"Feed UI/Composers/FeedUIComposer.swift",
 				"Feed UI/Controllers/FeedImageCellController.swift",
+				"Feed UI/Controllers/FeedRefreshController.swift",
 				"Feed UI/Controllers/FeedViewController.swift",
-				"Feed UI/Controllers/RefreshController.swift",
 				"Feed UI/Views/FeedImageCell.swift",
 				"Feed UI/Views/UIView+ShimmerLoading.swift",
 			);

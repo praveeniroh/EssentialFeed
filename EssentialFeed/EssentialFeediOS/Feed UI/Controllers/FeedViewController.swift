@@ -16,9 +16,9 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         }
     }
 
-    private(set) var refreshController: RefreshController?
+    private(set) var refreshController: FeedRefreshController?
 
-    init(refreshController: RefreshController) {
+    init(refreshController: FeedRefreshController) {
         super.init(nibName: nil, bundle: nil)
         self.refreshController = refreshController
     }

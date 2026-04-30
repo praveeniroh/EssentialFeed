@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import EssentialFeed
 
-public class RefreshController: NSObject {
+public class FeedRefreshController: NSObject {
     //Just for testing purpose making removing private(set)
     internal(set) public lazy var view:UIRefreshControl = {
         let refreshControl = UIRefreshControl()
