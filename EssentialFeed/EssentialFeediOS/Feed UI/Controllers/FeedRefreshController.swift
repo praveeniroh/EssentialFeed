@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import EssentialFeed
 
 public class FeedRefreshController: NSObject {
     //Just for testing purpose making removing private(set)
@@ -15,9 +14,8 @@ public class FeedRefreshController: NSObject {
         return bind(UIRefreshControl())
     }()
     private let feedViewModel: FeedViewModel
-    public var onRefresh: (([FeedImage])->Void)?
-    init(feedLoader: FeedLoader) {
-        self.feedViewModel = FeedViewModel(feedLoader: feedLoader)
+    init(feedViewModel: FeedViewModel) {
+        self.feedViewModel = feedViewModel
     }
 
     @objc func refresh() {
@@ -31,9 +29,6 @@ public class FeedRefreshController: NSObject {
                 view.beginRefreshing()
             } else {
                 view.endRefreshing()
-            }
-            if let feed = viewModel.feed {
-                self.onRefresh?(feed)
             }
         }
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)

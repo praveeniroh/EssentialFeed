@@ -26,7 +26,7 @@ final class FeedViewModel {
         }
     }
     var onChange: ((FeedViewModel)->Void)?
-
+    var onFeedLoad: (([FeedImage])->Void)?
     var isLoading: Bool {
         switch state {
         case .loading: return true
@@ -49,6 +49,7 @@ final class FeedViewModel {
             }
             if let feed = try? result.get() {
                 state = .loaded(feed)
+                onFeedLoad?(feed)
             } else {
                 state = .failed
             }
