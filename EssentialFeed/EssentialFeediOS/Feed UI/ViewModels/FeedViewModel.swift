@@ -14,45 +14,24 @@ final class FeedViewModel {
         self.feedLoader = feedLoader
     }
 
-    private enum State {
-        case pending
-        case loading
-        case loaded([FeedImage])
-        case failed
-    }
-    private var state: State = .pending {
+    var onChange: ((FeedViewModel)->Void)?
+    var onFeedLoad: (([FeedImage])->Void)?
+    var isLoading: Bool  = false {
         didSet {
             onChange?(self)
         }
     }
-    var onChange: ((FeedViewModel)->Void)?
-    var onFeedLoad: (([FeedImage])->Void)?
-    var isLoading: Bool {
-        switch state {
-        case .loading: return true
-        case .failed, .loaded, .pending: return false
-        }
-    }
-
-    var feed: [FeedImage]? {
-        switch state {
-        case .loaded(let feed): return feed
-        case .failed, .loading, .pending: return nil
-        }
-    }
 
     func loadFeed() {
-        state = .loading
+        isLoading = true
         feedLoader.load{[weak self] result in
             guard let self else {
                 return
             }
             if let feed = try? result.get() {
-                state = .loaded(feed)
                 onFeedLoad?(feed)
-            } else {
-                state = .failed
             }
+            isLoading = false
         }
     }
 }
