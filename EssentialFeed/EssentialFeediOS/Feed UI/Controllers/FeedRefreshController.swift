@@ -12,9 +12,7 @@ import EssentialFeed
 public class FeedRefreshController: NSObject {
     //Just for testing purpose making removing private(set)
     internal(set) public lazy var view:UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        return refreshControl
+        return bind(UIRefreshControl())
     }()
     private let feedViewModel: FeedViewModel
     public var onRefresh: (([FeedImage])->Void)?
@@ -23,6 +21,10 @@ public class FeedRefreshController: NSObject {
     }
 
     @objc func refresh() {
+        feedViewModel.loadFeed()
+    }
+
+     func bind(_ view: UIRefreshControl) -> UIRefreshControl {
         feedViewModel.onChange = {[weak self]viewModel in
             guard let self else {return}
             if viewModel.isLoading {
@@ -34,10 +36,7 @@ public class FeedRefreshController: NSObject {
                 self.onRefresh?(feed)
             }
         }
-        feedViewModel.loadFeed()
-    }
-
-    private func bind(_ view: UIRefreshControl) {
-
+        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return view
     }
 }

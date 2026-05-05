@@ -365,11 +365,11 @@ fileprivate extension UIButton {
 
 fileprivate extension FeedViewController {
     var isShowingLoadingIndicator: Bool {
-        refreshControl?.isRefreshing == true
+        refreshController?.view.isRefreshing == true
     }
 
     func stimulateUserInitiatedPulltoRefresh() {
-        refreshControl?.stimulatePullToRefresh()
+        refreshController?.view.stimulatePullToRefresh()
     }
 
     func simulateAppearence() {
@@ -405,6 +405,7 @@ fileprivate extension FeedViewController {
         }
         refreshControl = fake
         self.refreshController?.view = fake
+        _ = self.refreshController?.bind(fake)
     }
 
     func numberOfRenderedFeedImageViews() -> Int{

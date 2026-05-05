@@ -40,8 +40,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
 
     private func startRefreshing(){
-        refreshControl?.beginRefreshing()
-
+        refreshController?.view.beginRefreshing()
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
