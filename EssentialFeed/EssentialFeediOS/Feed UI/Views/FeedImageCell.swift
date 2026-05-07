@@ -20,9 +20,9 @@ public final class FeedImageCell: UITableViewCell {
         return button
     }()
 
-    var onImageLoadRetry: (() -> Void)?
+    var onRetry: (() -> Void)?
 
     @objc private func didTapRetry() {
-        onImageLoadRetry?()
+        onRetry?()
     }
 }
