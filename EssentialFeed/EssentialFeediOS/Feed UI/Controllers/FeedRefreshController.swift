@@ -8,28 +8,28 @@
 import Foundation
 import UIKit
 
-public class FeedRefreshController: NSObject {
+public class FeedRefreshController: NSObject, FeedLoadingView {
     //Just for testing purpose making removing private(set)
-    internal(set) public lazy var view:UIRefreshControl = {
-        return bind(UIRefreshControl())
-    }()
-    private let feedViewModel: FeedViewModel
-    init(feedViewModel: FeedViewModel) {
-        self.feedViewModel = feedViewModel
+    internal(set) public lazy var view = loadView()
+    private let presenter: FeedPresenter
+    init(presenter: FeedPresenter) {
+        self.presenter = presenter
     }
 
     @objc func refresh() {
-        feedViewModel.loadFeed()
+        presenter.loadFeed()
     }
 
-     func bind(_ view: UIRefreshControl) -> UIRefreshControl {
-        feedViewModel.onLoadingStateChange = {[weak view]isLoading in
-            if isLoading {
-                view?.beginRefreshing()
-            } else {
-                view?.endRefreshing()
-            }
+    func display(isLoading: Bool) {
+        if isLoading {
+            view.beginRefreshing()
+        } else {
+            view.endRefreshing()
         }
+    }
+
+    private func loadView() -> UIRefreshControl {
+         let view = UIRefreshControl()
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
         return view
     }

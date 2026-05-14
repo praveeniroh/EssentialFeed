@@ -405,7 +405,7 @@ fileprivate extension FeedViewController {
         }
         refreshControl = fake
         self.refreshController?.view = fake
-        _ = self.refreshController?.bind(fake)
+//        _ = self.refreshController?.bind(fake)
     }
 
     func numberOfRenderedFeedImageViews() -> Int{
