@@ -30,11 +30,11 @@ private class FeedViewAdapter: FeedView {
         self.imageLoader = imageLoader
     }
 
-    func display(feed: [FeedImage]) {
+    func display(_ viewModel: FeedViewModel) {
         guard let feedController else {
             return
         }
-        feedController.tableModel = feed.map({model in FeedImageCellController(viewModel: FeedImageViewModel(model: model, imageLoader: imageLoader, imageTransformer: UIImage.init))})
+        feedController.tableModel = viewModel.feed.map({model in FeedImageCellController(viewModel: FeedImageViewModel(model: model, imageLoader: imageLoader, imageTransformer: UIImage.init))})
     }
 }
 
@@ -45,7 +45,7 @@ private class WeakRefVirtualProxy<T: AnyObject> {
     }
 }
 extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
-    func display(isLoading: Bool) {
-        value?.display(isLoading: isLoading)
+    func display(_ viewModel: FeedLoadingViewModel) {
+        value?.display(viewModel)
     }
 }
