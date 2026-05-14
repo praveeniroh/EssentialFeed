@@ -11,13 +11,13 @@ import UIKit
 public class FeedRefreshController: NSObject, FeedLoadingView {
     //Just for testing purpose making removing private(set)
     internal(set) public lazy var view = loadView()
-    private let presenter: FeedPresenter
-    init(presenter: FeedPresenter) {
-        self.presenter = presenter
+    private let loadFeed: () -> ()
+    init(loadFeed: @escaping () -> ()) {
+        self.loadFeed = loadFeed
     }
 
     @objc func refresh() {
-        presenter.loadFeed()
+        loadFeed()
     }
 
     func display(_ viewModel: FeedLoadingViewModel) {
