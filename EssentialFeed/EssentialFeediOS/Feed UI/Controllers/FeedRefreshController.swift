@@ -8,16 +8,19 @@
 import Foundation
 import UIKit
 
+protocol FeedRefreshViewControllerDelegate {
+    func didRequestRefresh()
+}
 public class FeedRefreshController: NSObject, FeedLoadingView {
     //Just for testing purpose making removing private(set)
     internal(set) public lazy var view = loadView()
-    private let loadFeed: () -> ()
-    init(loadFeed: @escaping () -> ()) {
-        self.loadFeed = loadFeed
+    private let delegate: FeedRefreshViewControllerDelegate
+    init(delegate: FeedRefreshViewControllerDelegate) {
+        self.delegate = delegate
     }
 
     @objc func refresh() {
-        loadFeed()
+        delegate.didRequestRefresh()
     }
 
     func display(_ viewModel: FeedLoadingViewModel) {
