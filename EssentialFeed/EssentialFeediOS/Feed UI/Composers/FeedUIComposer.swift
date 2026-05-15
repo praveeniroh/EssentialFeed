@@ -12,12 +12,14 @@ public final class FeedUIComposer {
     private init() {}
     
     public static func makeFeedViewController(feedLoader: FeedLoader, imageLoader: FeedImageDataLoader) -> FeedViewController {
-        let presenter = FeedPresenter()
-        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: feedLoader, presenter: presenter)
+        let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: feedLoader)
         let refreshController = FeedRefreshController(delegate: presentationAdapter)
         let feedController = FeedViewController(refreshController: refreshController)
-        presenter.loadingView = WeakRefVirtualProxy(refreshController)
-        presenter.feedView = FeedViewAdapter(feedController: feedController, imageLoader: imageLoader)
+        let presenter = FeedPresenter(feedView: FeedViewAdapter(feedController: feedController, imageLoader: imageLoader), loadingView: WeakRefVirtualProxy(refreshController))
+        //Why adapter.presenter property injection?
+        //Since MVP create's cyclic dependency, Atleast on the property need to be injected. Presentation adapter belongs to composer layer, we're preferring presenter injection here
+        presentationAdapter.presenter = presenter
+
         return feedController
     }
 }
@@ -54,23 +56,22 @@ extension WeakRefVirtualProxy: FeedLoadingView where T: FeedLoadingView {
 
 private class FeedLoaderPresentationAdapter: FeedRefreshViewControllerDelegate {
     let feedLoader: FeedLoader
-    let presenter: FeedPresenter
-    init(feedLoader: FeedLoader, presenter: FeedPresenter) {
+    var presenter: FeedPresenter?
+    init(feedLoader: FeedLoader) {
         self.feedLoader = feedLoader
-        self.presenter = presenter
     }
 
     func didRequestRefresh() {
-        presenter.didStartLoading()
+        presenter?.didStartLoading()
         feedLoader.load{[weak self] result in
             guard let self else {
                 return
             }
             switch result {
             case .success(let feed):
-                presenter.didFinishLoading(with: feed)
+                presenter?.didFinishLoading(with: feed)
             case .failure(let error):
-                presenter.didFinishLoading(with: error)
+                presenter?.didFinishLoading(with: error)
             }
         }
     }
