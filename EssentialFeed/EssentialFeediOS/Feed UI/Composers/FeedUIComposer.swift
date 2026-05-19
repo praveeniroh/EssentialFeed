@@ -15,6 +15,7 @@ public final class FeedUIComposer {
         let presentationAdapter = FeedLoaderPresentationAdapter(feedLoader: feedLoader)
         let refreshController = FeedRefreshController(delegate: presentationAdapter)
         let feedController = FeedViewController(refreshController: refreshController)
+        feedController.title = FeedPresenter.title
         let presenter = FeedPresenter(feedView: FeedViewAdapter(feedController: feedController, imageLoader: imageLoader), loadingView: WeakRefVirtualProxy(refreshController))
         //Why adapter.presenter property injection?
         //Since MVP create's cyclic dependency, Atleast on the property need to be injected. Presentation adapter belongs to composer layer, we're preferring presenter injection here
