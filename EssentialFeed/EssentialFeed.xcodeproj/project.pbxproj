@@ -133,6 +133,7 @@
 				"Feed UI/Controllers/FeedImageCellController.swift",
 				"Feed UI/Controllers/FeedRefreshController.swift",
 				"Feed UI/Controllers/FeedViewController.swift",
+				"Feed UI/Feed Presentation/FeedImagePresenter.swift",
 				"Feed UI/Feed Presentation/FeedImageViewModel.swift",
 				"Feed UI/Feed Presentation/FeedPresenter.swift",
 				"Feed UI/Feed Presentation/FeedViewModel.swift",

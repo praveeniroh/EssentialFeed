@@ -7,6 +7,7 @@
 
 import Foundation
 import EssentialFeed
+
 struct FeedLoadingViewModel {
     var isLoading: Bool
 }

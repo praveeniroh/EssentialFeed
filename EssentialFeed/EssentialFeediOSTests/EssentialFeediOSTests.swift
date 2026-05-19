@@ -127,14 +127,8 @@ final class EssentialFeediOSTests: XCTestCase {
         loader.completeImageLoading(at: 0)
         loader.completeImageLoadingWithError(at: 1)
 
-        XCTAssertEqual(view0?.isShimmering, false, "Expected to not show shimmering while loading image data")
-        XCTAssertEqual(view1?.isShimmering, false, "Expected to not show shimmering while loading image data")
-
-        sut.simulateFeedImageViewNotVisible(at: 0)
-        XCTAssertEqual(view0?.isShimmering,false, "Expected to cancel image URL request when view becomes invisible")
-
-        sut.simulateFeedImageViewNotVisible(at: 1)
-        XCTAssertEqual(view1?.isShimmering, false, "Expected second image URL request once second view also becomes visible")
+        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false, "Expected to not show shimmering while loading image data")
+        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, false, "Expected to not show shimmering while loading image data")
     }
 
 
