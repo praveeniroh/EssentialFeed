@@ -8,14 +8,16 @@
 import XCTest
 import EssentialFeed
 
-final class EssentialFeediOSTests: XCTestCase {
+final class FeedViewControllerIntegrationTests: XCTestCase {
 
     func test_feedView_hasTitle() {
         let (sut,_) = makeSUT()
         sut.loadViewIfNeeded()
-        XCTAssertEqual(sut.title, "My Feed")
+
+        XCTAssertEqual(sut.title, localize("FEED_VIEW_TITLE"))
     }
 
+    
     func test_loadFeedActions_requestFeedFromLoader() {
         let (sut,loader) = makeSUT()
         XCTAssertEqual(loader.loadCallCount, 0, "Should not load while initializing")
