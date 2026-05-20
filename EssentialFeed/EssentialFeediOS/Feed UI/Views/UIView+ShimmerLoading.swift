@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+public import UIKit
 
 extension UIView {
     public var isShimmering: Bool {

@@ -5,7 +5,8 @@
 //  Created by Praveenraj T on 18/04/26.
 //
 
-import UIKit
+internal import UIKit
+
 protocol FeedImageCellControllerDelegate {
     func didRequestImage()
     func didCancelImageRequest()

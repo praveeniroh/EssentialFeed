@@ -7,7 +7,7 @@
 
 
 //import EssentialFeed
-import UIKit
+public import UIKit
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     var tableModel = [FeedImageCellController]() {

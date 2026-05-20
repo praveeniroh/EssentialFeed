@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+public import UIKit
 
 public final class FeedImageCell: UITableViewCell {
     public let locationContainer = UIView()
