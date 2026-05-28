@@ -46,8 +46,14 @@ final class FeedPresenter {
     }
 
     func didFinishLoading(with feed: [FeedImage]) {
-        feedView.display(FeedViewModel(feed:feed))
-        loadingView.display(FeedLoadingViewModel(isLoading: false))
+        if Thread.isMainThread {
+            feedView.display(FeedViewModel(feed:feed))
+            loadingView.display(FeedLoadingViewModel(isLoading: false))
+        } else {
+            DispatchQueue.main.async {[weak self] in
+                self?.didFinishLoading(with: feed)
+            }
+        }
     }
 
     func didFinishLoading(with error: Error) {
