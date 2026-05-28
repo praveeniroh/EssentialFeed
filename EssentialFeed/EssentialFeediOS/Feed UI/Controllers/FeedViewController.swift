@@ -12,7 +12,9 @@ public import UIKit
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     var tableModel = [FeedImageCellController]() {
         didSet {
-            tableView.reloadData()
+            DispatchQueue.main.asyncAfter(deadline: .now()) {[weak self] in
+                self?.tableView.reloadData()
+            }
         }
     }
 

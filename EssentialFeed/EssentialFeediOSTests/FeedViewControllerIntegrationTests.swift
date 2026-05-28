@@ -263,6 +263,19 @@ final class FeedViewControllerIntegrationTests: XCTestCase {
 
     }
 
+    func test_loadFeedCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearence()
+
+        let exp = expectation(description: "completion called")
+        DispatchQueue.global().async {
+            loader.completeFeedLoading(with: [])
+            exp.fulfill()
+        }
+
+        wait(for: [exp], timeout: 1.0)
+    }
+
     // MARK: Helpers
 
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (sut: FeedViewController, loader: LoaderSpy) {
